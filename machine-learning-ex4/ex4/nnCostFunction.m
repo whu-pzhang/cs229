@@ -76,7 +76,7 @@ z3 = Theta2 * a2';
 a3 = sigmoid(z3);
 h = a3';
 
-J = J + 1 / m * sum(sum(-yTruthVal .* log(h) - ( (1 - yTruthVal) .* log(1-h) )));
+J = J + (1 / m) * sum(sum(-yTruthVal .* log(h) - ( (1 - yTruthVal) .* log(1-h) )));
 
 
 % backpropagation
@@ -91,23 +91,24 @@ Theta2_grad = (1 / m) * delta2;
 
 
 % for loop version
-for i = 1:m
-    a1 = [1, X(i, :)];
-    z2 = Theta1 * a1';
-    a2 = [1; sigmoid(z2)];
-    z3 = Theta2 * a2;
-    a3 = sigmoid(z3);
-    h = a3';
-    J = J + sum(- yTruthVal(i, :) .* log(h) - (1 - yTruthVal(i, :)) .* log(1 - h));
-    
-    d3 = h - yTruthVal(i, :);
-    d2 = (d3 * Theta2(:, 2:end)) .* sigmoidGradient(z2)';
-    
-end
+% for i = 1:m
+%     a1 = [1, X(i, :)];
+%     z2 = Theta1 * a1';
+%     a2 = [1; sigmoid(z2)];
+%     z3 = Theta2 * a2;
+%     a3 = sigmoid(z3);
+%     h = a3';
+%     J = J + sum(- yTruthVal(i, :) .* log(h) - (1 - yTruthVal(i, :)) .* log(1 - h));
+%     
+% %     d3 = h - yTruthVal(i, :);
+% %     d2 = (d3 * Theta2(:, 2:end)) .* sigmoidGradient(z2)';
+%     
+% end
+% 
+% J = J / m;
 
-J = J / m;
 
-
+J = J + (lambda / (2*m)) * (sum(sum(Theta1(:, 2:end).^2)) + sum(sum(Theta2(:, 2:end).^2)));
 
 
 % -------------------------------------------------------------
