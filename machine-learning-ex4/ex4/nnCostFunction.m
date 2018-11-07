@@ -69,6 +69,7 @@ for i = 1:num_labels
    yTruthVal(:, i) = (y == i);
 end
 
+% forwardpropagation
 a1 = [ones(m, 1), X];
 z2 = a1 * Theta1';
 a2 = [ones(m, 1), sigmoid(z2)];
@@ -76,8 +77,7 @@ z3 = Theta2 * a2';
 a3 = sigmoid(z3);
 h = a3';
 
-J = J + (1 / m) * sum(sum(-yTruthVal .* log(h) - ( (1 - yTruthVal) .* log(1-h) )));
-
+J = (1 / m) * sum(sum(-yTruthVal .* log(h) - ( (1 - yTruthVal) .* log(1-h) )));
 
 % backpropagation
 d3 = h - yTruthVal;
@@ -86,14 +86,15 @@ d2 = (d3 * Theta2(:, 2:end)) .* sigmoidGradient(z2);
 delta1 = a1' * d2;
 delta2 = a2' * d3;
 
-Theta1_grad = (1 / m) * delta1;
-Theta2_grad = (1 / m) * delta2;
+Theta1_grad = Theta1_grad + (1 / m) * delta1';
+Theta2_grad = Theta2_grad + (1 / m) * delta2';
 
+%--------------------------------------------------------------------------
 
 % for loop version
 % for i = 1:m
-%     a1 = [1, X(i, :)];
-%     z2 = Theta1 * a1';
+%     a1 = [1; X(i, :)'];
+%     z2 = Theta1 * a1;
 %     a2 = [1; sigmoid(z2)];
 %     z3 = Theta2 * a2;
 %     a3 = sigmoid(z3);
@@ -107,10 +108,11 @@ Theta2_grad = (1 / m) * delta2;
 % 
 % J = J / m;
 
-
+% add regularized term
 J = J + (lambda / (2*m)) * (sum(sum(Theta1(:, 2:end).^2)) + sum(sum(Theta2(:, 2:end).^2)));
 
-
+Theta1_grad(:, 2:end) = Theta1_grad(:, 2:end) + (lambda / m) * Theta1(:, 2:end);
+Theta2_grad(:, 2:end) = Theta2_grad(:, 2:end) + (lambda / m) * Theta2(:, 2:end);
 % -------------------------------------------------------------
 
 % =========================================================================
